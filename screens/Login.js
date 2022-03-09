@@ -1,29 +1,54 @@
 import { View, Text, Button } from 'react-native'
-import React from 'react'
-// import { Button } from 'native-base';
-import { getAuth, signInWithRedirect, GoogleAuthProvider } from "firebase/auth"
-import { useApp } from '../src/hook/local';
+import React, { useState, useEffect } from 'react'
+import auth from '@react-native-firebase/auth';
 
 
 const Login = ({navigation}) => {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
-
-
-  const app = useApp();
-  const auth = getAuth(app);
+  // const app = useApp();
+  // const auth = getAuth(app);
     const handleLogin = async () =>{
-      const provider = new GoogleAuthProvider;
-      signInWithRedirect(auth, provider);
+      auth().signInAnonymously();
+    }
+    const handleLogout = async() =>{
+      auth().signOut();
     }
 
-  return (
-    <View>
-      <Button
-        onPress={handleLogin}
-      >Login with Google</Button>
+    if (!user){
+      return (
+        <View>
+          <Button
+            onPress={handleLogin}
+            title={'Login'}
+          />
+    
+        </View>
+      )
+    }
+    return (
+      <View>
+        <Text>
+          Logged In
+          <Button
+          title='logout'
+          onPress={handleLogout}
+          />
+        </Text>
+      </View>
+    )
+    
 
-    </View>
-  )
+  
 }
 
 export default Login

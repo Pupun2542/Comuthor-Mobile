@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "232642491936",
+    "project_id": "comuthor-dev",
+    "storage_bucket": "comuthor-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:232642491936:android:598ccd3e103799b0eb6e45",
+        "android_client_info": {
+          "package_name": "com.comuthorteam.comuthor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "232642491936-249sicvenimh7vcls428a8s25v8hege8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7Y9hsbaTvDKydDDs2xNuAXlgnLI6ZFNI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "232642491936-249sicvenimh7vcls428a8s25v8hege8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

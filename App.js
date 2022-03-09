@@ -1,45 +1,40 @@
 import "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
+import * as DevMenu from "expo-dev-menu";
+import { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Group from "./screens/Group";
 import CreateGroup from "./screens/CreateGroup";
 import GroupDetail from "./screens/GroupDetail";
-import { NavigationContainer } from "@react-navigation/native";
 import Login from "./screens/Login";
-import { AppProvider } from "./src/hook/local";
-
-const Tabs = createBottomTabNavigator();
-
-const Stack = createStackNavigator();
-
-function GroupStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Group" component={Group} />
-      <Stack.Screen name="Detail" component={GroupDetail} />
-      <Stack.Screen name="Login" component={Login} />
-    </Stack.Navigator>
-  );
-}
-function CreateGroupStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Create Group" component={CreateGroup} />
-    </Stack.Navigator>
-  );
-}
+import { NativeBaseProvider } from "native-base";
 
 export default function App() {
+  const Tabs = createBottomTabNavigator();
+  const Stacks = createStackNavigator();
+
+  function GroupStack() {
+    return (
+      <Stacks.Navigator>
+        <Stacks.Screen name="Group" component={Group} />
+        <Stacks.Screen name="Detail" component={GroupDetail} />
+        <Stacks.Screen name="Login" component={Login} />
+      </Stacks.Navigator>
+    );
+  }
+  function CreateGroupStack() {
+    return (
+      <Stacks.Navigator>
+        <Stacks.Screen name="Create Group" component={CreateGroup} />
+      </Stacks.Navigator>
+    );
+  }
+
   return (
-    <AppProvider>
+    <NativeBaseProvider>
       <View style={styles.container}>
         <NavigationContainer>
           <Tabs.Navigator screenOptions={{ headerShown: false }}>
@@ -48,10 +43,9 @@ export default function App() {
           </Tabs.Navigator>
         </NavigationContainer>
       </View>
-    </AppProvider>
+    </NativeBaseProvider>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

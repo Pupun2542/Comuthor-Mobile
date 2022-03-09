@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "Comuthor",
-    "slug": "Comuthor",
+    "name": "ComuthorMobile",
+    "slug": "comuthormobile",
+    "scheme": "comuthormobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,16 +18,22 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.comuthormobile.ComuthorMobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.comuthorteam.comuthor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app"
+    ]
   }
 }
