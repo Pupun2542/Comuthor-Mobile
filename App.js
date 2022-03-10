@@ -32,7 +32,7 @@ export default function App() {
       </Stacks.Navigator>
     );
   }
-
+ 
   return (
     <NativeBaseProvider>
       <View style={styles.container}>
