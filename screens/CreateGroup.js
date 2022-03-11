@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect } from "react";
 import { Formik, Field } from "formik";
 import * as Yup from "yup";
 import {
@@ -14,11 +14,14 @@ import {
   VStack,
   Center,
   AspectRatio,
-  Image
+  Image,
 } from "native-base";
 import DateTimePicker from "@react-native-community/datetimepicker";
-// import ImagePicker from 'react-native-image-crop-picker';
-import ImageCropPicker from "react-native-image-crop-picker";
+import * as ImagePicker from 'expo-image-picker';
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from 'expo-image-picker';
 
 const validateSchema = Yup.object().shape({
   Tag: Yup.string()
@@ -30,86 +33,124 @@ const validateSchema = Yup.object().shape({
 });
 
 const CreateGroup = ({ navigation }) => {
+  const [user, setUser] = useState();
+  const [initializing, setInitializing] = useState(true);
+
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  
+
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <Ionicons
+  //         name="person-add"
+  //         size={24}
+  //         color="black"
+  //         onPress={() => navigation.navigate("Login")}
+  //       />
+  //     ),
+  //   });
+  // }, [navigation]);
+
   const [date, setDate] = useState(new Date(1598051730000));
   const [show, setShow] = useState(false);
   const [seldate, setSeldate] = useState("");
-  const [banner, setBanner] = useState("https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca")
+  const [banner, setBanner] = useState(
+    "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
+  );
   // const [loading, setLoading] = useState(true);
 
-  const handleUpload = ()=>{
-    // ImagePicker.openPicker({
-    //   width: 300,
-    //   height: 400,
-    //   cropping: true
-    // }).then(image => {
-    //   setBanner(image);
-    // });
-    ImageCropPicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true
-    }).then(image => {
-        setBanner(image);
-      });
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
   }
-
+  
   return (
-    <Box alignContent="center">
-      <Button backgroundColor={'white'} onPress={handleUpload}>
-      <AspectRatio w="100%" ratio={16 / 9}>
-        <Image
-          source={{
-            uri: banner,
+    <ScrollView>
+      <Box alignContent="center">
+        <Button backgroundColor={"white"} onPress={pickImage}>
+          <AspectRatio w="100%" ratio={16 / 9}>
+            <Image
+              source={{
+                uri: banner,
+              }}
+              alt={"banner"}
+            />
+          </AspectRatio>
+        </Button>
+
+        {/* {!loading && ( */}
+        <Formik
+          //ค่าเริ่มต้นของข้อมูลโดยกำหนดให้ตรงกัน backend
+          initialValues={{
+            Tag: "",
+            Name: "",
+            Description: "",
+            RunDate: "",
+            SMlink: "",
+            ContactLink: "",
+            DocLink: "",
           }}
-        />
-      </AspectRatio>
-      </Button>
+          validationSchema={validateSchema}
+          onSubmit={async (values, { setSubmitting }) => {
+            //   // same shape as initial values
+            //   // alert(JSON.stringify(values));
+            //   try {
+            //     const url = "https://api.codingthailand.com/api/register";
+            //     const res = await axios.post(url, {
+            //       name: values.name,
+            //       email: values.email,
+            //       password: values.password,
+            //     });
+            //     alert(res.data.message);
+            //     navigation.navigate("Home");
+            //   } catch (error) {
+            //     alert(error.response.data.errors.email[0]);
+            //   } finally {
+            //     setSubmitting(false);
+            //   }
+            const coll = firestore().collection("group");
+            const res = await coll.add({
+              Tag: values.Tag,
+              Name: values.Name,
+              Description: values.Description,
+              RunDate: values.RunDate,
+              SMlink: values.SMlink,
+              ContactLink: values.ContactLink,
+              DocLink: values.DocLink,
+              BannerURL: banner,
+            });
+            setSubmitting(false);
+          }}
+        >
+          {/*//errors ใช้สำหรับการตรวจสอบ state (ถ้าผู้ใช้ไม่กรอกข้อมูลจะให้ error อะไรเกิดขึ้น)*/}
+          {/* touched  เมื่อผู้ใช้ไปกดที่ name และเลื่อนเม้าส์ไปด้านนอกช่อง input โดยไม่กรอกข้อมูล*/}
 
-      {/* {!loading && ( */}
-      <Formik
-        //ค่าเริ่มต้นของข้อมูลโดยกำหนดให้ตรงกัน backend
-        initialValues={{
-          Tag: "",
-          Name: "",
-          Description: "",
-          RunDate: "",
-          SMlink: "",
-          ContactLink: "",
-          DocLink: "",
-        }}
-        validationSchema={validateSchema}
-        // onSubmit={async (values, { setSubmitting }) => {
-        //   // same shape as initial values
-        //   // alert(JSON.stringify(values));
-        //   try {
-        //     const url = "https://api.codingthailand.com/api/register";
-        //     const res = await axios.post(url, {
-        //       name: values.name,
-        //       email: values.email,
-        //       password: values.password,
-        //     });
-        //     alert(res.data.message);
-        //     navigation.navigate("Home");
-        //   } catch (error) {
-        //     alert(error.response.data.errors.email[0]);
-        //   } finally {
-        //     setSubmitting(false);
-        //   }
-        // }}
-      >
-        {/*//errors ใช้สำหรับการตรวจสอบ state (ถ้าผู้ใช้ไม่กรอกข้อมูลจะให้ error อะไรเกิดขึ้น)*/}
-        {/* touched  เมื่อผู้ใช้ไปกดที่ name และเลื่อนเม้าส์ไปด้านนอกช่อง input โดยไม่กรอกข้อมูล*/}
-
-        {({
-          errors,
-          touched,
-          values,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting,
-        }) => (
-          <ScrollView>
+          {({
+            errors,
+            touched,
+            values,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            isSubmitting,
+          }) => (
             <VStack
               width="90%"
               space={4}
@@ -216,11 +257,11 @@ const CreateGroup = ({ navigation }) => {
                 </Text>
               </Button>
             </VStack>
-          </ScrollView>
-        )}
-      </Formik>
-      {/* )} */}
-    </Box>
+          )}
+        </Formik>
+        {/* )} */}
+      </Box>
+    </ScrollView>
   );
 };
 

@@ -1,11 +1,26 @@
 import { View, Text } from 'react-native'
 import React from 'react'
+import { VStack, Box, Container, ScrollView, Image } from 'native-base';
 
-const GroupDetail = ({navigation}) => {
+const GroupDetail = ({navigation,route}) => {
+  const {id, data} = route.params;
+  console.log(route);
   return (
-    <View>
-      <Text>GroupDetail</Text>
-    </View>
+    <Box>
+      <ScrollView>
+        <VStack>
+        <Image
+          source={{uri: data.bannerURL }}
+          alt="banner"
+        ></Image>
+        </VStack>
+        <VStack>
+        <Text>
+          {data.Description}
+        </Text>
+        </VStack>
+      </ScrollView>
+    </Box>
   )
 }
 
