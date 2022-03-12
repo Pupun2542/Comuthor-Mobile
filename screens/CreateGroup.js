@@ -21,7 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from 'expo-image-picker';
+import { uploadBanner } from "../src/services/filestoreageservice";
 
 const validateSchema = Yup.object().shape({
   Tag: Yup.string()
@@ -44,8 +44,6 @@ const CreateGroup = ({ navigation }) => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
-
-  
 
   // useLayoutEffect(() => {
   //   navigation.setOptions({
@@ -71,13 +69,14 @@ const CreateGroup = ({ navigation }) => {
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
     if (!result.cancelled) {
-      setImage(result.uri);
+      // console.log(result);
+      setBanner(result.uri);
     }
   }
   
@@ -109,22 +108,11 @@ const CreateGroup = ({ navigation }) => {
           }}
           validationSchema={validateSchema}
           onSubmit={async (values, { setSubmitting }) => {
-            //   // same shape as initial values
-            //   // alert(JSON.stringify(values));
-            //   try {
-            //     const url = "https://api.codingthailand.com/api/register";
-            //     const res = await axios.post(url, {
-            //       name: values.name,
-            //       email: values.email,
-            //       password: values.password,
-            //     });
-            //     alert(res.data.message);
-            //     navigation.navigate("Home");
-            //   } catch (error) {
-            //     alert(error.response.data.errors.email[0]);
-            //   } finally {
-            //     setSubmitting(false);
-            //   }
+
+            console.log("submit");
+            
+            const dlurl = await uploadBanner(banner, res.id+"_banner.jpg");
+            console.log(dlurl);
             const coll = firestore().collection("group");
             const res = await coll.add({
               Tag: values.Tag,
@@ -134,9 +122,11 @@ const CreateGroup = ({ navigation }) => {
               SMlink: values.SMlink,
               ContactLink: values.ContactLink,
               DocLink: values.DocLink,
-              BannerURL: banner,
+              bannerURL: dlurl
             });
+            console.log(res.id);
             setSubmitting(false);
+            console.log("submitted");
           }}
         >
           {/*//errors ใช้สำหรับการตรวจสอบ state (ถ้าผู้ใช้ไม่กรอกข้อมูลจะให้ error อะไรเกิดขึ้น)*/}

@@ -18,7 +18,8 @@ const Group = ({ navigation }) => {
     });
   }
   useEffect(() => {
-    loadData()
+    const load = loadData()
+    return load
   },[]);
 
   GroupCollection.onSnapshot(
