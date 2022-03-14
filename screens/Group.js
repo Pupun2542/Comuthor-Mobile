@@ -109,7 +109,9 @@ const Group = ({ navigation }) => {
                   <AspectRatio w="100%" ratio={16 / 9}>
                     <Image
                       source={{
-                        uri: d.bannerURL,
+                        uri: d.bannerURL
+                        ? d.bannerURL
+                        : "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
                       }}
                       alt="image"
                     />
@@ -122,8 +124,8 @@ const Group = ({ navigation }) => {
                     </Heading>
                   </Stack>
                   <Text fontWeight="400">
-                    {d.Description.length > 50
-                      ? d.Description.slice(0, 50)
+                    {d.Description.length > 80
+                      ? d.Description.slice(0, 80)+"..."
                       : d.Description}
                   </Text>
                 </Stack>

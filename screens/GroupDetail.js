@@ -30,7 +30,14 @@ const GroupDetail = ({ navigation, route }) => {
       <ScrollView alignContent={"center"}>
         <VStack>
           <AspectRatio w="100%" ratio={16 / 9}>
-            <Image source={{ uri: data.bannerURL }} alt="banner"></Image>
+            <Image
+              source={{
+                uri: data.bannerURL
+                  ? data.bannerURL
+                  : "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca",
+              }}
+              alt="banner"
+            ></Image>
           </AspectRatio>
         </VStack>
         <VStack alignItems={"center"} backgroundColor={"black"}>
@@ -51,7 +58,7 @@ const GroupDetail = ({ navigation, route }) => {
           <Text fontSize={"lg"}>{data.Description}</Text>
         </VStack>
         <VStack
-          backgroundColor={data.RunDate? "gray.400" : "red.500"}
+          backgroundColor={data.RunDate ? "gray.400" : "red.500"}
           marginLeft={3}
           marginRight={3}
           marginTop={3}
@@ -65,7 +72,7 @@ const GroupDetail = ({ navigation, route }) => {
           </Text>
         </VStack>
         <VStack
-          backgroundColor={data.DocLink? "gray.400" : "red.500"}
+          backgroundColor={data.DocLink ? "gray.400" : "red.500"}
           marginLeft={3}
           marginRight={3}
           marginTop={3}
@@ -82,11 +89,12 @@ const GroupDetail = ({ navigation, route }) => {
               }
             }}
           >
-            ลิงก์กลุ่มคอมมู : {data.DocLink ? "กดเพื่อดูลิงค์ด็อค" : "ยังไม่มีลิงก์ด็อค"}
+            ลิงก์ด็อคคอมมู :{" "}
+            {data.DocLink ? "กดเพื่อไปที่ด็อค" : "ยังไม่มีลิงก์ด็อค"}
           </Text>
         </VStack>
         <VStack
-          backgroundColor={data.SMlink? "gray.400" : "red.500"}
+          backgroundColor={data.SMlink ? "gray.400" : "red.500"}
           marginLeft={3}
           marginRight={3}
           marginTop={3}
@@ -98,16 +106,37 @@ const GroupDetail = ({ navigation, route }) => {
           <Text
             fontSize={"lg"}
             onPress={() => {
-              if (data.SMLink) {
-                Linking.openURL(data.SMLink);
+              if (data.SMlink) {
+                Linking.openURL(data.SMlink);
               }
             }}
           >
-            ลิงก์กลุ่มคอมมู : {data.SMLink ? data.SMlink : "ยังไม่มีลิงก์กลุ่ม"}
+            ลิงก์กลุ่มคอมมู : {data.SMlink ? "กดเพื่อไปที่กลุ่ม" : "ยังไม่มีลิงก์กลุ่ม"}
+          </Text>
+        </VStack>
+        <VStack
+          backgroundColor={data.ContactLink ? "gray.400" : "red.500"}
+          marginLeft={3}
+          marginRight={3}
+          marginTop={3}
+          borderRadius={5}
+          paddingTop={2}
+          paddingBottom={2}
+          paddingLeft={2}
+        >
+          <Text
+            fontSize={"lg"}
+            onPress={() => {
+              if (data.ContactLink) {
+                Linking.openURL(data.ContactLink);
+              }
+            }}
+          >
+            {data.ContactLink ? "ช่องทางติดต่อ" : "ไม่มีช่องทางติดต่อ"}
           </Text>
         </VStack>
         <HStack marginTop={5}>
-          <Button onPress={deletegroup} marginLeft={3} background={'red.500'}>
+          <Button onPress={deletegroup} marginLeft={3} background={"red.500"}>
             ลบกลุ่ม
           </Button>
           <Button

@@ -3,10 +3,18 @@ import storage from '@react-native-firebase/storage';
 export async function uploadBanner(file, name){
 
   const ref = storage().ref(`group/${name}`);
-  console.log(ref)
-  const task = ref.putFile(file);
+  console.log(ref.fullPath)
+  console.log(file)
+  const task = await ref.putFile(file);
 
-  task.on("state_changed")
+  console.log(`${task.bytesTransferred} transferred out of ${task.totalBytes}`);
+
+  // task.on('state_changed', taskSnapshot => {
+  //   console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+  // });
+  // task.then(() => {
+  //   console.log('Image uploaded to the bucket!');
+  // });
   
   const dlurl = await ref.getDownloadURL();
   console.log(dlurl);

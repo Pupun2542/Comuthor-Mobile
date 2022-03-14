@@ -48,16 +48,18 @@ const EditGroup = ({ navigation, route }) => {
   //   });
   // }, [navigation]);
 
-  const convertDate = (date) =>{
-      // console.log(req);
-      const spdate = date.split("/");
-      const d = new Date(spdate[2], parseInt(spdate[1]) - 1, spdate[0]);
-      return d
-  }
+  const convertDate = (date) => {
+    // console.log(req);
+    const spdate = date.split("/");
+    const d = new Date(spdate[2], parseInt(spdate[1]) - 1, spdate[0]);
+    return d;
+  };
 
-  const [date, setDate] = useState(data.RunDate? convertDate(data.RunDate) : new Date(1598051730000));
+  const [date, setDate] = useState(
+    data.RunDate ? convertDate(data.RunDate) : new Date(1598051730000)
+  );
   const [show, setShow] = useState(false);
-  const [seldate, setSeldate] = useState(data.RunDate? data.RunDate : "");
+  const [seldate, setSeldate] = useState(data.RunDate ? data.RunDate : "");
   const [banner, setBanner] = useState(
     data.bannerURL
       ? data.bannerURL
@@ -81,23 +83,27 @@ const EditGroup = ({ navigation, route }) => {
   // }, []);
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.cancelled) {
-      // console.log(result);
-      setBanner(result.uri);
-      setImgchange(true);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        console.log(result);
+        setBanner(result.uri);
+        setImgchange(true);
+      }
+    } catch (error) {
+      alert("ไม่สามารถใช้รูปนี้ได้ กรุณาเปลี่ยนรูป");
     }
   };
+  // No permissions request is necessary for launching the image library
 
   return (
     <ScrollView>
-      <Box alignContent="center" background={'gray.400'}>
+      <Box alignContent="center" background={"gray.400"}>
         <Button backgroundColor={"white"} onPress={pickImage}>
           <AspectRatio w="100%" ratio={16 / 9}>
             <Image
@@ -138,8 +144,9 @@ const EditGroup = ({ navigation, route }) => {
               })
               .then(() => {
                 if (imgchange) {
-                  uploadBanner(banner, res.id + "_banner.jpg").then((dlurl) => {
-                    res.update({ bannerURL: dlurl });
+                  uploadBanner(banner, id + "_banner.jpg").then((dlurl) => {
+                    console.log(dlurl);
+                    coll.update({ bannerURL: dlurl });
                   });
                 }
 
@@ -176,7 +183,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Tag}
                   onChangeText={handleChange("Tag")}
                   onBlur={handleBlur("Tag")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Tag}
@@ -188,7 +195,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Name}
                   onChangeText={handleChange("Name")}
                   onBlur={handleBlur("Name")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Name}
@@ -200,16 +207,12 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Description}
                   onChangeText={handleChange("Description")}
                   onBlur={handleBlur("Description")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
               </FormControl>
               <FormControl>
                 <FormControl.Label>Run Date</FormControl.Label>
-                <Box
-                  backgroundColor={'white'}
-                  padding={3}
-                  rounded={5}
-                >
+                <Box backgroundColor={"white"} padding={3} rounded={5}>
                   <Text onPress={() => setShow(true)}>
                     {seldate ? seldate : "เลือกเวลา"}
                   </Text>
@@ -244,7 +247,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.DocLink}
                   onChangeText={handleChange("DocLink")}
                   onBlur={handleBlur("DocLink")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
               </FormControl>
               <FormControl>
@@ -253,7 +256,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.SMlink}
                   onChangeText={handleChange("SMlink")}
                   onBlur={handleBlur("SMlink")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
               </FormControl>
               <FormControl>
@@ -262,7 +265,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.ContactLink}
                   onChangeText={handleChange("ContactLink")}
                   onBlur={handleBlur("ContactLink")}
-                  backgroundColor={'white'}
+                  backgroundColor={"white"}
                 />
               </FormControl>
               <Button
