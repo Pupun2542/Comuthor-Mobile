@@ -3,7 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
 import * as DevMenu from "expo-dev-menu";
 import { useState, useEffect } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Group from "./screens/Group";
@@ -13,14 +14,20 @@ import Login from "./screens/Login";
 import { NativeBaseProvider } from "native-base";
 import auth from "@react-native-firebase/auth";
 import EditGroup from "./screens/EditGroup";
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 export default function App() {
-  const Tabs = createBottomTabNavigator();
+  const Tabs = createMaterialBottomTabNavigator();
   const Stacks = createStackNavigator();
 
   function GroupStack() {
     return (
-      <Stacks.Navigator>
+      <Stacks.Navigator
+        screenOptions={{
+          headerStyle: {backgroundColor: "#515259"},
+          headerTitleStyle: {color: 'white'}
+        }}
+      >
         <Stacks.Screen name="Group" component={Group} />
         <Stacks.Screen name="Detail" component={GroupDetail} />
         <Stacks.Screen name="Edit Group" component={EditGroup} />
@@ -29,7 +36,12 @@ export default function App() {
   }
   function CreateGroupStack() {
     return (
-      <Stacks.Navigator>
+      <Stacks.Navigator
+      screenOptions={{
+        headerStyle: {backgroundColor: "#515259"},
+        headerTitleStyle: {color: 'white'}
+      }}
+      >
         <Stacks.Screen name="Create Group" component={CreateGroup} />
       </Stacks.Navigator>
     );
@@ -55,9 +67,27 @@ export default function App() {
       {user && (
         <View style={styles.container}>
           <NavigationContainer>
-            <Tabs.Navigator screenOptions={{ headerShown: false }}>
-              <Tabs.Screen name="groups" component={GroupStack} />
-              <Tabs.Screen name="CreateGroup" component={CreateGroupStack} />
+            <Tabs.Navigator 
+              screenOptions={{ headerShown: false }}
+              barStyle={{
+                backgroundColor: "#515259",
+              }}
+              shifting={true}
+              >
+              <Tabs.Screen name="groups" 
+                component={GroupStack} 
+                options={{
+                  tabBarIcon: () => (
+                    <MaterialIcons name="group-add" color={'lightgray'} size={26} />
+                  ),
+                }}
+                />
+              <Tabs.Screen name="CreateGroup" 
+                component={CreateGroupStack} 
+                options={{
+                  tabBarIcon: ()=>(<MaterialIcons name="group" size={24} color="lightgray" />)
+                }}
+              />
             </Tabs.Navigator>
           </NavigationContainer>
         </View>

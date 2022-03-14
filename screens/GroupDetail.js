@@ -16,7 +16,7 @@ import firestore from "@react-native-firebase/firestore";
 const GroupDetail = ({ navigation, route }) => {
   const { id, data } = route.params;
   // console.log(data.bannerURL);
-  console.log(data.RunDate);
+  // console.log(data.RunDate);
   const deletegroup = async () => {
     const col = firestore().collection("group").doc(id);
     // console.log(col);
@@ -44,26 +44,56 @@ const GroupDetail = ({ navigation, route }) => {
           marginRight={3}
           marginTop={3}
           borderRadius={5}
+          paddingTop={2}
+          paddingBottom={2}
+          paddingLeft={2}
         >
           <Text fontSize={"lg"}>{data.Description}</Text>
         </VStack>
         <VStack
-          backgroundColor="gray.400"
+          backgroundColor={data.RunDate? "gray.400" : "red.500"}
           marginLeft={3}
           marginRight={3}
           marginTop={3}
           borderRadius={5}
+          paddingTop={2}
+          paddingBottom={2}
+          paddingLeft={2}
         >
           <Text fontSize={"lg"}>
             เวลาส่งวิ่ง : {data.RunDate ? data.RunDate : "ไม่ปรากฎวันวิ่ง"}
           </Text>
         </VStack>
         <VStack
-          backgroundColor="gray.400"
+          backgroundColor={data.DocLink? "gray.400" : "red.500"}
           marginLeft={3}
           marginRight={3}
           marginTop={3}
           borderRadius={5}
+          paddingTop={2}
+          paddingBottom={2}
+          paddingLeft={2}
+        >
+          <Text
+            fontSize={"lg"}
+            onPress={() => {
+              if (data.DocLink) {
+                Linking.openURL(data.DocLink);
+              }
+            }}
+          >
+            ลิงก์กลุ่มคอมมู : {data.DocLink ? "กดเพื่อดูลิงค์ด็อค" : "ยังไม่มีลิงก์ด็อค"}
+          </Text>
+        </VStack>
+        <VStack
+          backgroundColor={data.SMlink? "gray.400" : "red.500"}
+          marginLeft={3}
+          marginRight={3}
+          marginTop={3}
+          borderRadius={5}
+          paddingTop={2}
+          paddingBottom={2}
+          paddingLeft={2}
         >
           <Text
             fontSize={"lg"}
@@ -73,11 +103,11 @@ const GroupDetail = ({ navigation, route }) => {
               }
             }}
           >
-            ลิงก์กลุ่มคอมมู : {data.SMLink ? data.SMlink : "ยังไม่มีลิงก์ด็อค"}
+            ลิงก์กลุ่มคอมมู : {data.SMLink ? data.SMlink : "ยังไม่มีลิงก์กลุ่ม"}
           </Text>
         </VStack>
         <HStack marginTop={5}>
-          <Button onPress={deletegroup} marginLeft={3}>
+          <Button onPress={deletegroup} marginLeft={3} background={'red.500'}>
             ลบกลุ่ม
           </Button>
           <Button

@@ -97,7 +97,7 @@ const EditGroup = ({ navigation, route }) => {
 
   return (
     <ScrollView>
-      <Box alignContent="center">
+      <Box alignContent="center" background={'gray.400'}>
         <Button backgroundColor={"white"} onPress={pickImage}>
           <AspectRatio w="100%" ratio={16 / 9}>
             <Image
@@ -176,6 +176,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Tag}
                   onChangeText={handleChange("Tag")}
                   onBlur={handleBlur("Tag")}
+                  backgroundColor={'white'}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Tag}
@@ -187,6 +188,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Name}
                   onChangeText={handleChange("Name")}
                   onBlur={handleBlur("Name")}
+                  backgroundColor={'white'}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Name}
@@ -198,11 +200,16 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.Description}
                   onChangeText={handleChange("Description")}
                   onBlur={handleBlur("Description")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
                 <FormControl.Label>Run Date</FormControl.Label>
-                <Box>
+                <Box
+                  backgroundColor={'white'}
+                  padding={3}
+                  rounded={5}
+                >
                   <Text onPress={() => setShow(true)}>
                     {seldate ? seldate : "เลือกเวลา"}
                   </Text>
@@ -237,6 +244,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.DocLink}
                   onChangeText={handleChange("DocLink")}
                   onBlur={handleBlur("DocLink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
@@ -245,6 +253,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.SMlink}
                   onChangeText={handleChange("SMlink")}
                   onBlur={handleBlur("SMlink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
@@ -253,6 +262,7 @@ const EditGroup = ({ navigation, route }) => {
                   value={values.ContactLink}
                   onChangeText={handleChange("ContactLink")}
                   onBlur={handleBlur("ContactLink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <Button

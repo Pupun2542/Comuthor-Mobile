@@ -82,7 +82,7 @@ const CreateGroup = ({ navigation }) => {
 
   return (
     <ScrollView>
-      <Box alignContent="center">
+      <Box alignContent="center" background={'gray.400'}>
         <Button backgroundColor={"white"} onPress={pickImage}>
           <AspectRatio w="100%" ratio={16 / 9}>
             <Image
@@ -164,6 +164,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.Tag}
                   onChangeText={handleChange("Tag")}
                   onBlur={handleBlur("Tag")}
+                  backgroundColor={'white'}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Tag}
@@ -175,6 +176,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.Name}
                   onChangeText={handleChange("Name")}
                   onBlur={handleBlur("Name")}
+                  backgroundColor={'white'}
                 />
                 <FormControl.ErrorMessage>
                   {errors.Name}
@@ -186,6 +188,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.Description}
                   onChangeText={handleChange("Description")}
                   onBlur={handleBlur("Description")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
@@ -225,6 +228,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.DocLink}
                   onChangeText={handleChange("DocLink")}
                   onBlur={handleBlur("DocLink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
@@ -233,6 +237,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.SMlink}
                   onChangeText={handleChange("SMlink")}
                   onBlur={handleBlur("SMlink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <FormControl>
@@ -241,6 +246,7 @@ const CreateGroup = ({ navigation }) => {
                   value={values.ContactLink}
                   onChangeText={handleChange("ContactLink")}
                   onBlur={handleBlur("ContactLink")}
+                  backgroundColor={'white'}
                 />
               </FormControl>
               <Button
@@ -249,6 +255,7 @@ const CreateGroup = ({ navigation }) => {
                 style={{ marginTop: 30, backgroundColor: "#E9AB17" }}
                 onPress={handleSubmit}
                 disabled={isSubmitting}
+                backgroundColor={'white'}
               >
                 <Text
                   style={{ color: "white", fontSize: 15, fontWeight: "bold" }}
