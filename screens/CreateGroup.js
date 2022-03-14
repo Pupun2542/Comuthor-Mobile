@@ -17,7 +17,7 @@ import {
   Image,
 } from "native-base";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
@@ -78,8 +78,8 @@ const CreateGroup = ({ navigation }) => {
       // console.log(result);
       setBanner(result.uri);
     }
-  }
-  
+  };
+
   return (
     <ScrollView>
       <Box alignContent="center">
@@ -108,48 +108,41 @@ const CreateGroup = ({ navigation }) => {
           }}
           validationSchema={validateSchema}
           onSubmit={async (values, { setSubmitting }) => {
-
             console.log("submit");
-            
-            
-            
+
             const coll = firestore().collection("group");
-            coll.add({
-              Tag: values.Tag,
-              Name: values.Name,
-              Description: values.Description,
-              RunDate: values.RunDate,
-              SMlink: values.SMlink,
-              ContactLink: values.ContactLink,
-              DocLink: values.DocLink,
-              
-            }).then(async(res)=>{
-              console.log(res.id);
-              const dlurl = await uploadBanner(banner, res.id+"_banner.jpg").catch(e=>{
-                
+            coll
+              .add({
+                Tag: values.Tag,
+                Name: values.Name,
+                Description: values.Description,
+                RunDate: values.RunDate,
+                SMlink: values.SMlink,
+                ContactLink: values.ContactLink,
+                DocLink: values.DocLink,
+              })
+              .then(async (res) => {
+                console.log(res.id);
+                const dlurl = await uploadBanner(
+                  banner,
+                  res.id + "_banner.jpg"
+                ).catch((e) => {});
+                console.log(dlurl);
+                res.update({ bannerURL: dlurl });
+                setSubmitting(false);
+                console.log("submitted");
+                const d = await res.get();
+                navigation.navigate("groupdetail", {
+                  id: res.id,
+                  data: d.data(),
+                });
+              })
+              .finally(() => {
+                setSubmitting(false);
+                console.log("submitted");
               });
-              console.log(dlurl);
-              res.update({bannerURL: dlurl})
-              setSubmitting(false);
-              console.log("submitted");
-              const d = await res.get()
-              navigation.navigate("groupdetail", {id: res.id, data: d.data()})
-            }).finally(()=>{
-              setSubmitting(false);
-              console.log("submitted");
-            }
-              
-            );
-
-            
-            
-
-
           }}
         >
-          {/*//errors ใช้สำหรับการตรวจสอบ state (ถ้าผู้ใช้ไม่กรอกข้อมูลจะให้ error อะไรเกิดขึ้น)*/}
-          {/* touched  เมื่อผู้ใช้ไปกดที่ name และเลื่อนเม้าส์ไปด้านนอกช่อง input โดยไม่กรอกข้อมูล*/}
-
           {({
             errors,
             touched,
@@ -197,29 +190,34 @@ const CreateGroup = ({ navigation }) => {
               </FormControl>
               <FormControl>
                 <FormControl.Label>Run Date</FormControl.Label>
+                <Box>
+                  <Text onPress={() => setShow(true)}>
+                    {seldate ? seldate : "เลือกเวลา"}
+                  </Text>
+                </Box>
                 {show && (
                   <DateTimePicker
                     value={date}
                     mode="date"
                     display="calendar"
                     onChange={(event, selectedDate) => {
+                      // console.log(selectedDate);
                       const currentDate = selectedDate || date;
+                      // console.log(currentDate);
                       setShow(Platform.OS === "ios");
                       setDate(currentDate);
                       const d =
-                        date.getDate() +
+                        currentDate.getDate() +
                         "/" +
-                        date.getMonth() +
+                        currentDate.getMonth() +
                         "/" +
-                        date.getFullYear();
+                        currentDate.getFullYear();
                       setSeldate(d);
                       values.RunDate = d;
+                      // console.log(d);
                     }}
                   />
                 )}
-                <Box>
-                  <Text onPress={() => setShow(true)}>{seldate ? seldate : "เลือกเวลา"}</Text>
-                </Box>
               </FormControl>
               <FormControl>
                 <FormControl.Label>Doc Link</FormControl.Label>

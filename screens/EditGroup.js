@@ -33,7 +33,7 @@ const validateSchema = Yup.object().shape({
 });
 
 const EditGroup = ({ navigation, route }) => {
-  const {id, data} = route.params;
+  const { id, data } = route.params;
 
   // useLayoutEffect(() => {
   //   navigation.setOptions({
@@ -48,22 +48,37 @@ const EditGroup = ({ navigation, route }) => {
   //   });
   // }, [navigation]);
 
-  const [date, setDate] = useState(new Date(1598051730000));
+  const convertDate = (date) =>{
+      // console.log(req);
+      const spdate = date.split("/");
+      const d = new Date(spdate[2], parseInt(spdate[1]) - 1, spdate[0]);
+      return d
+  }
+
+  const [date, setDate] = useState(data.RunDate? convertDate(data.RunDate) : new Date(1598051730000));
   const [show, setShow] = useState(false);
-  const [seldate, setSeldate] = useState("");
+  const [seldate, setSeldate] = useState(data.RunDate? data.RunDate : "");
   const [banner, setBanner] = useState(
-    data.bannerURL? data.bannerURL : "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
+    data.bannerURL
+      ? data.bannerURL
+      : "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
   );
   const [imgchange, setImgchange] = useState(false);
 
-  useEffect (()=>{
-    const loadstate = () =>{
-      if (data.bannerURL){
-        setBanner(data.bannerURL);
-      }
-    }
-    return loadstate
-  })
+  // useEffect(() => {
+  //   const loadstate = () => {
+  //     if (data.bannerURL) {
+  //       setBanner(data.bannerURL);
+  //     }
+  //     if (data.RunDate){
+  //       console.log(data.RunDate)
+  //       const spdate = data.RunDate.split("/");
+  //       const d = new Date(spdate[2], parseInt(spdate[1])-1, spdate[0]);
+  //       setDate(d);
+  //     }
+  //   };
+  //   return loadstate;
+  // }, []);
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -76,6 +91,7 @@ const EditGroup = ({ navigation, route }) => {
     if (!result.cancelled) {
       // console.log(result);
       setBanner(result.uri);
+      setImgchange(true);
     }
   };
 
@@ -97,19 +113,19 @@ const EditGroup = ({ navigation, route }) => {
         <Formik
           //ค่าเริ่มต้นของข้อมูลโดยกำหนดให้ตรงกัน backend
           initialValues={{
-            Tag: data.Tag? data.Tag : "",
-            Name: data.Name? data.Name : "",
-            Description: data.Description? data.Description : "",
-            RunDate: data.RunDate? data.RunDate: "",
-            SMlink:data.SMlink? data.SMlink: "",
-            ContactLink: data.ContactLink? data.ContactLink : "",
-            DocLink: data.DocLink? data.DocLink : "",
+            Tag: data.Tag ? data.Tag : "",
+            Name: data.Name ? data.Name : "",
+            Description: data.Description ? data.Description : "",
+            RunDate: data.RunDate ? data.RunDate : "",
+            SMlink: data.SMlink ? data.SMlink : "",
+            ContactLink: data.ContactLink ? data.ContactLink : "",
+            DocLink: data.DocLink ? data.DocLink : "",
           }}
           validationSchema={validateSchema}
           onSubmit={async (values, { setSubmitting }) => {
             // console.log("submit");
 
-            const coll = firestore().doc("group/"+id);
+            const coll = firestore().doc("group/" + id);
             coll
               .update({
                 Tag: values.Tag,
@@ -121,16 +137,14 @@ const EditGroup = ({ navigation, route }) => {
                 DocLink: values.DocLink,
               })
               .then(() => {
-                if (imgchange){
-                  const dlurl = await uploadBanner(
-                    banner,
-                    res.id + "_banner.jpg"
-                  );
-                  res.update({ bannerURL: dlurl });
+                if (imgchange) {
+                  uploadBanner(banner, res.id + "_banner.jpg").then((dlurl) => {
+                    res.update({ bannerURL: dlurl });
+                  });
                 }
 
                 // console.log(dlurl);
-                
+
                 setSubmitting(false);
                 // console.log("submitted");
                 navigation.goBack();
@@ -188,31 +202,34 @@ const EditGroup = ({ navigation, route }) => {
               </FormControl>
               <FormControl>
                 <FormControl.Label>Run Date</FormControl.Label>
+                <Box>
+                  <Text onPress={() => setShow(true)}>
+                    {seldate ? seldate : "เลือกเวลา"}
+                  </Text>
+                </Box>
                 {show && (
                   <DateTimePicker
                     value={date}
                     mode="date"
                     display="calendar"
                     onChange={(event, selectedDate) => {
+                      console.log(selectedDate);
                       const currentDate = selectedDate || date;
+                      console.log(currentDate);
                       setShow(Platform.OS === "ios");
                       setDate(currentDate);
                       const d =
-                        date.getDate() +
+                        currentDate.getDate() +
                         "/" +
-                        date.getMonth() +
+                        currentDate.getMonth() +
                         "/" +
-                        date.getFullYear();
+                        currentDate.getFullYear();
                       setSeldate(d);
                       values.RunDate = d;
+                      console.log(show);
                     }}
                   />
                 )}
-                <Box>
-                  <Text onPress={() => setShow(true)}>
-                    {seldate ? seldate : "เลือกเวลา"}
-                  </Text>
-                </Box>
               </FormControl>
               <FormControl>
                 <FormControl.Label>Doc Link</FormControl.Label>
