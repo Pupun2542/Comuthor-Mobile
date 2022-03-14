@@ -3,9 +3,13 @@ import storage from '@react-native-firebase/storage';
 export async function uploadBanner(file, name){
 
   const ref = storage().ref(`group/${name}`);
-  await ref.putFile(file);
+  console.log(ref)
+  const task = ref.putFile(file);
 
+  task.on("state_changed")
+  
   const dlurl = await ref.getDownloadURL();
+  console.log(dlurl);
   return dlurl;
 }
 

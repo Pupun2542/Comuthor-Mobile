@@ -17,7 +17,7 @@ import {
   Image,
 } from "native-base";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from "expo-image-picker";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
@@ -32,18 +32,8 @@ const validateSchema = Yup.object().shape({
   Description: Yup.string().required("ใส่คำอธิบายด้วย"),
 });
 
-const CreateGroup = ({ navigation }) => {
-  const [user, setUser] = useState();
-  const [initializing, setInitializing] = useState(true);
-
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
+const EditGroup = ({ navigation, route }) => {
+  const {id, data} = route.params;
 
   // useLayoutEffect(() => {
   //   navigation.setOptions({
@@ -62,9 +52,18 @@ const CreateGroup = ({ navigation }) => {
   const [show, setShow] = useState(false);
   const [seldate, setSeldate] = useState("");
   const [banner, setBanner] = useState(
-    "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
+    data.bannerURL? data.bannerURL : "https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca"
   );
-  // const [loading, setLoading] = useState(true);
+  const [imgchange, setImgchange] = useState(false);
+
+  useEffect (()=>{
+    const loadstate = () =>{
+      if (data.bannerURL){
+        setBanner(data.bannerURL);
+      }
+    }
+    return loadstate
+  })
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -78,8 +77,8 @@ const CreateGroup = ({ navigation }) => {
       // console.log(result);
       setBanner(result.uri);
     }
-  }
-  
+  };
+
   return (
     <ScrollView>
       <Box alignContent="center">
@@ -98,58 +97,50 @@ const CreateGroup = ({ navigation }) => {
         <Formik
           //ค่าเริ่มต้นของข้อมูลโดยกำหนดให้ตรงกัน backend
           initialValues={{
-            Tag: "",
-            Name: "",
-            Description: "",
-            RunDate: "",
-            SMlink: "",
-            ContactLink: "",
-            DocLink: "",
+            Tag: data.Tag? data.Tag : "",
+            Name: data.Name? data.Name : "",
+            Description: data.Description? data.Description : "",
+            RunDate: data.RunDate? data.RunDate: "",
+            SMlink:data.SMlink? data.SMlink: "",
+            ContactLink: data.ContactLink? data.ContactLink : "",
+            DocLink: data.DocLink? data.DocLink : "",
           }}
           validationSchema={validateSchema}
           onSubmit={async (values, { setSubmitting }) => {
+            // console.log("submit");
 
-            console.log("submit");
-            
-            
-            
-            const coll = firestore().collection("group");
-            coll.add({
-              Tag: values.Tag,
-              Name: values.Name,
-              Description: values.Description,
-              RunDate: values.RunDate,
-              SMlink: values.SMlink,
-              ContactLink: values.ContactLink,
-              DocLink: values.DocLink,
-              
-            }).then(async(res)=>{
-              console.log(res.id);
-              const dlurl = await uploadBanner(banner, res.id+"_banner.jpg").catch(e=>{
+            const coll = firestore().doc("group/"+id);
+            coll
+              .update({
+                Tag: values.Tag,
+                Name: values.Name,
+                Description: values.Description,
+                RunDate: values.RunDate,
+                SMlink: values.SMlink,
+                ContactLink: values.ContactLink,
+                DocLink: values.DocLink,
+              })
+              .then(() => {
+                if (imgchange){
+                  const dlurl = await uploadBanner(
+                    banner,
+                    res.id + "_banner.jpg"
+                  );
+                  res.update({ bannerURL: dlurl });
+                }
+
+                // console.log(dlurl);
                 
+                setSubmitting(false);
+                // console.log("submitted");
+                navigation.goBack();
+              })
+              .finally(() => {
+                setSubmitting(false);
+                // console.log("submitted");
               });
-              console.log(dlurl);
-              res.update({bannerURL: dlurl})
-              setSubmitting(false);
-              console.log("submitted");
-              const d = await res.get()
-              navigation.navigate("groupdetail", {id: res.id, data: d.data()})
-            }).finally(()=>{
-              setSubmitting(false);
-              console.log("submitted");
-            }
-              
-            );
-
-            
-            
-
-
           }}
         >
-          {/*//errors ใช้สำหรับการตรวจสอบ state (ถ้าผู้ใช้ไม่กรอกข้อมูลจะให้ error อะไรเกิดขึ้น)*/}
-          {/* touched  เมื่อผู้ใช้ไปกดที่ name และเลื่อนเม้าส์ไปด้านนอกช่อง input โดยไม่กรอกข้อมูล*/}
-
           {({
             errors,
             touched,
@@ -218,7 +209,9 @@ const CreateGroup = ({ navigation }) => {
                   />
                 )}
                 <Box>
-                  <Text onPress={() => setShow(true)}>{seldate ? seldate : "เลือกเวลา"}</Text>
+                  <Text onPress={() => setShow(true)}>
+                    {seldate ? seldate : "เลือกเวลา"}
+                  </Text>
                 </Box>
               </FormControl>
               <FormControl>
@@ -267,4 +260,4 @@ const CreateGroup = ({ navigation }) => {
   );
 };
 
-export default CreateGroup;
+export default EditGroup;

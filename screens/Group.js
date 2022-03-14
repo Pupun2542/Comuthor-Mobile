@@ -6,8 +6,6 @@ import firestore from "@react-native-firebase/firestore";
 import { Box, AspectRatio, Center, Stack, Heading, HStack, Image } from "native-base";
 
 const Group = ({ navigation }) => {
-  const [user, setUser] = useState();
-  const [initializing, setInitializing] = useState(true);
   const GroupCollection = firestore().collection("group");
   const [group, setGroup] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,19 +15,23 @@ const Group = ({ navigation }) => {
       setGroup(val.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   }
-  useEffect(() => {
-    const load = loadData()
-    return load
-  },[]);
+  // useEffect(() => {
+  //   const load = loadData()
+  //   return load
+  // },[]);
 
-  GroupCollection.onSnapshot(
-    (q) => {
-      setGroup(q.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    },
-    (e) => {
-      alert(e.message);
-    }
-  );
+  useEffect(()=>{
+
+    const subscribe = GroupCollection.onSnapshot(
+      (q) => {
+        setGroup(q.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      },
+      (e) => {
+        alert(e.message);
+      }
+    );
+    return subscribe
+    })
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -42,15 +44,6 @@ const Group = ({ navigation }) => {
     loadData();
     wait(2000).then(() => setRefreshing(false));
 
-  }, []);
-
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
   }, []);
 
   // React.useLayoutEffect(() => {

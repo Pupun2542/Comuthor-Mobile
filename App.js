@@ -11,6 +11,8 @@ import CreateGroup from "./screens/CreateGroup";
 import GroupDetail from "./screens/GroupDetail";
 import Login from "./screens/Login";
 import { NativeBaseProvider } from "native-base";
+import auth from "@react-native-firebase/auth";
+import EditGroup from "./screens/EditGroup";
 
 export default function App() {
   const Tabs = createBottomTabNavigator();
@@ -21,7 +23,7 @@ export default function App() {
       <Stacks.Navigator>
         <Stacks.Screen name="Group" component={Group} />
         <Stacks.Screen name="Detail" component={GroupDetail} />
-        <Stacks.Screen name="Login" component={Login} />
+        <Stacks.Screen name="Edit Group" component={EditGroup} />
       </Stacks.Navigator>
     );
   }
@@ -32,17 +34,39 @@ export default function App() {
       </Stacks.Navigator>
     );
   }
- 
+
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  const handleLogin = async () => {
+    auth().signInAnonymously();
+  };
+
   return (
     <NativeBaseProvider>
-      <View style={styles.container}>
-        <NavigationContainer>
-          <Tabs.Navigator screenOptions={{ headerShown: false }}>
-            <Tabs.Screen name="groups" component={GroupStack} />
-            <Tabs.Screen name="CreateGroup" component={CreateGroupStack} />
-          </Tabs.Navigator>
-        </NavigationContainer>
-      </View>
+      {user && (
+        <View style={styles.container}>
+          <NavigationContainer>
+            <Tabs.Navigator screenOptions={{ headerShown: false }}>
+              <Tabs.Screen name="groups" component={GroupStack} />
+              <Tabs.Screen name="CreateGroup" component={CreateGroupStack} />
+            </Tabs.Navigator>
+          </NavigationContainer>
+        </View>
+      )}
+      {!user && (
+        <View>
+          <Button onPress={handleLogin} title={"Login"} />
+        </View>
+      )}
     </NativeBaseProvider>
   );
 }
