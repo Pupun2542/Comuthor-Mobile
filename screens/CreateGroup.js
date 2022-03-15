@@ -155,6 +155,7 @@ const CreateGroup = ({ navigation }) => {
                       });
                     })
                     setBanner("https://firebasestorage.googleapis.com/v0/b/comuthor-dev.appspot.com/o/resource%2Fimageplaceholder.png?alt=media&token=b051fff3-c143-4e92-ab5a-7929e3b8edca")
+                    setSeldate("");
                   });
 
                 }
